@@ -110,7 +110,136 @@ void addData(MonthRecord* records, int count) {
     if (records[arrIdx].balance > 0) cout << "+";
     cout << records[arrIdx].balance << endl;
 }
+void printReport(MonthRecord* records, int count) {
+    cout << "\n-------------------------------------------------\n";
+    cout << "Month      | Income     | Expense    | Balance   \n";
+    cout << "-------------------------------------------------\n";
 
+    cout.flags(ios::fixed);
+    cout.precision(2);
+
+    for (int i = 0; i < count; i++) {
+        cout << records[i].name;
+        printSpaces(11 - 3);
+        cout << "| ";
+
+        cout << records[i].income;
+        if (records[i].income < 1000) printSpaces(4); else printSpaces(3);
+        cout << "| ";
+
+        cout << records[i].expense;
+        if (records[i].expense < 1000) printSpaces(4); else printSpaces(3);
+        cout << "| ";
+        if (records[i].balance > 0) cout << "+";
+        cout << records[i].balance << endl;
+    }
+    cout << "-------------------------------------------------\n";
+
+}
+
+void searchMonth(MonthRecord* records, int count) {
+    char searchName[20];
+    cin >> searchName;
+
+    bool found = false;
+    for (int i = 0; i < count; i++) {
+        if (areStringsEqualIgnoreCase(records[i].name, searchName)) {
+            double ratio = 0.0;
+            if (records[i].income != 0) {
+                ratio = (records[i].expense / records[i].income) * 100.0;
+            }
+
+            cout << "Income: " << records[i].income << endl;
+            cout << "Expense: " << records[i].expense << endl;
+
+            cout << "Balance: ";
+            if (records[i].balance > 0) cout << "+";
+            cout << records[i].balance << endl;
+
+            cout << "Expense ratio: " << ratio << "%" << endl;
+            found = true;
+            break;
+        }
+    }
+    if (!found) cout << "Month not found.\n";
+}
+
+void sortData(MonthRecord* records, int count) {
+    char type[20];
+    cin >> type;
+
+    MonthRecord* temp = new MonthRecord[count];
+    for (int i = 0; i < count; i++) temp[i] = records[i];
+
+    for (int i = 0; i < count - 1; i++) {
+        for (int j = 0; j < count - i - 1; j++) {
+            bool swapNeeded = false;
+            if (areStringsEqual(type, "income") && temp[j].income < temp[j + 1].income) swapNeeded = true;
+            else if (areStringsEqual(type, "expense") && temp[j].expense < temp[j + 1].expense) swapNeeded = true;
+            else if (areStringsEqual(type, "balance") && temp[j].balance < temp[j + 1].balance) swapNeeded = true;
+
+            if (swapNeeded) {
+                MonthRecord swapTemp = temp[j];
+                temp[j] = temp[j + 1];
+                temp[j + 1] = swapTemp;
+            }
+        }
+    }
+
+    cout << "Sorted by monthly " << type << " (descending):\n";
+    int limit = (count < 3) ? count : 3;
+
+    for (int i = 0; i < limit; i++) {
+        double val;
+        if (areStringsEqual(type, "income")) val = temp[i].income;
+        else if (areStringsEqual(type, "expense")) val = temp[i].expense;
+        else val = temp[i].balance;
+
+        cout << temp[i].name << ": ";
+        if (areStringsEqual(type, "balance") && val > 0) cout << "+";
+        cout << val << endl;
+    }
+
+    delete[] temp;
+}
+
+void forecast(MonthRecord* records, int count) {
+    int monthsAhead;
+    cin >> monthsAhead;
+
+    double currentSavings = 0;
+    double totalChange = 0;
+
+    for (int i = 0; i < count; i++) {
+        currentSavings += records[i].balance;
+        totalChange += records[i].balance;
+    }
+
+    double avgChange = (count > 0) ? (totalChange / count) : 0;
+
+    if (avgChange >= 0) {
+        double futureSavings = currentSavings + (monthsAhead * avgChange);
+        cout << "Current savings: " << currentSavings << endl;
+
+        cout << "Avg monthly change: ";
+        if (avgChange > 0) cout << "+";
+        cout << avgChange << endl;
+
+        cout << "Forecast in " << monthsAhead << " months: " << futureSavings << endl;
+    }
+    else {
+        cout << "Current savings: " << currentSavings << endl;
+        cout << "Avg monthly change: " << avgChange << endl;
+
+        if (currentSavings <= 0) {
+            cout << "You are already in debt or at 0.\n";
+        }
+        else {
+            int monthsToZero = (int)(currentSavings / myAbs(avgChange));
+            cout << "Warning! Funds will reach 0 in approx " << monthsToZero << " months.\n";
+        }
+    }
+}
 int main()
 {
    
