@@ -1,9 +1,16 @@
-
-
+/*
+* Solution to course project #3
+* Introduction to programming course
+* Faculty of Mathematics and Informatics of Sofia University
+* Winter 2025/2026
+* 
+* @idnumber 8MI0600637 
+* compiler VC
+* 
+* main file
+*/
 #include <iostream>
 using namespace std;
-
-
 struct MonthRecord {
     int id;
     char name[10];
@@ -240,8 +247,110 @@ void forecast(MonthRecord* records, int count) {
         }
     }
 }
+void showChart(MonthRecord* records, int count) {
+    cout << "=== YEARLY FINANCIAL CHART (INCOME) ===\n";
+
+    double maxVal = 0;
+    for (int i = 0; i < count; i++) {
+        if (records[i].income > maxVal) maxVal = records[i].income;
+    }
+
+    if (maxVal == 0) {
+        cout << "No income data.\n";
+        return;
+    }
+
+    int rows = 6;
+    double step = maxVal / rows;
+
+    for (int r = rows; r >= 1; r--) {
+        double threshold = step * r;
+        int val = (int)threshold;
+
+        cout << val;
+        if (val < 10) printSpaces(4);
+        else if (val < 100) printSpaces(3);
+        else if (val < 1000) printSpaces(2);
+        else printSpaces(1);
+
+        cout << "| ";
+
+        for (int i = 0; i < count; i++) {
+            if (records[i].income >= threshold) cout << " #  ";
+            else cout << "    ";
+        }
+        cout << endl;
+    }
+
+    cout << "      ";
+    for (int i = 0; i < count + 2; i++) cout << "---";
+    cout << endl;
+
+    cout << "       ";
+    for (int i = 0; i < count; i++) cout << records[i].name << " ";
+    cout << endl;
+}
 int main()
 {
-   
+    char command[20];
+    MonthRecord* records = nullptr;
+    int monthsCount = 0;
+
+    cout << "Welcome to Finance Tracker Project 03\n";
+
+    do {
+        cout << "\n> ";
+        cin >> command;
+
+        if (areStringsEqual(command, "setup")) {
+            if (records != nullptr) delete[] records;
+            records = setupProfile(monthsCount);
+        }
+        else if (areStringsEqual(command, "add")) {
+            if (records) addData(records, monthsCount);
+            else cout << "Please run 'setup' first.\n";
+        }
+        else if (areStringsEqual(command, "report")) {
+            if (records) printReport(records, monthsCount);
+            else cout << "No data.\n";
+        }
+        else if (areStringsEqual(command, "search")) {
+            if (records) searchMonth(records, monthsCount);
+            else {
+                char dummy[10]; cin >> dummy;
+                cout << "No data.\n";
+            }
+        }
+        else if (areStringsEqual(command, "sort")) {
+            if (records) sortData(records, monthsCount);
+            else {
+                char dummy[10]; cin >> dummy;
+                cout << "No data.\n";
+            }
+        }
+        else if (areStringsEqual(command, "forecast")) {
+            if (records) forecast(records, monthsCount);
+            else {
+                int dummy; cin >> dummy;
+                cout << "No data.\n";
+            }
+        }
+        else if (areStringsEqual(command, "chart")) {
+            if (records) showChart(records, monthsCount);
+            else cout << "No data.\n";
+        }
+        else if (areStringsEqual(command, "exit")) {
+            cout << "Exiting program. Final report generated.\n";
+            if (records) printReport(records, monthsCount);
+        }
+        else {
+            cout << "Unknown command.\n";
+        }
+
+    } while (!areStringsEqual(command, "exit"));
+
+    if (records != nullptr) delete[] records;
+
+    return 0;
 }
 
