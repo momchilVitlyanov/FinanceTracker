@@ -1,20 +1,56 @@
-// FinanceTracker.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
+
 
 #include <iostream>
+using namespace std;
+
+
+struct MonthRecord {
+    int id;
+    char name[10];
+    double income;
+    double expense;
+    double balance;
+};
+
+void myStrCopy(char* dest, const char* src) {
+    int i = 0;
+    while (src[i] != '\0') {
+        dest[i] = src[i];
+        i++;
+    }
+    dest[i] = '\0';
+}
+
+
+bool areStringsEqual(const char* s1, const char* s2) {
+    int i = 0;
+    while (s1[i] != '\0' && s2[i] != '\0') {
+        if (s1[i] != s2[i]) return false;
+        i++;
+    }
+
+    return (s1[i] == '\0' && s2[i] == '\0');
+}
+double myAbs(double x) {
+    if (x < 0) return -x;
+    return x;
+}
+void printSpaces(int n) {
+    for (int i = 0; i < n; i++) cout << " ";
+}
+void getMonthName(int index, char* buffer) {
+    const char* names[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+    if (index >= 0 && index < 12) {
+        myStrCopy(buffer, names[index]);
+    }
+    else {
+        myStrCopy(buffer, "Unknown");
+    }
+}
+
 
 int main()
 {
    
 }
 
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
